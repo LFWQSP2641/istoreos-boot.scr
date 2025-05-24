@@ -1,0 +1,30 @@
+name: Build boot.scr
+
+on:
+  push:
+    paths:
+      - 'default.bootscript'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uboot-mkimage
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y u-boot-tools
+
+      - name: Build boot.scr
+        run: |
+          mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
+            -d default.bootscript boot.scr
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot.scr
+          path: boot.scr
